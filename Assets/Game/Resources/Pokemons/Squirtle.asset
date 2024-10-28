@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 088fe0d515ccd6541aef317130250d42, type: 3}
+  m_Name: Squirtle
+  m_EditorClassIdentifier: 
+  name: Squirtle
+  description: "Squirtle is a bipedal, reptilian Pok\xE9mon. It has a blue body with
+    purple eyes, a light brown belly, and a tough red-brown shell on its back. It
+    has a long tail that curls into a spiral.\r\nSquirtle is primarily based on a
+    turtle, taking inspiration from both land-dwelling and sea-dwelling varieties.
+    The curly tail resembles a crashing wave."
+  forntSprite: {fileID: 21300000, guid: 4c355da7608758441b5d76a5e97e3aab, type: 3}
+  backSprite: {fileID: 21300000, guid: 190d9603c6c772d40bbdaab3c1858a92, type: 3}
+  type1: 3
+  type2: 0
+  maxHP: 44
+  attack: 48
+  defence: 65
+  spAttack: 50
+  spDefence: 64
+  speed: 43
+  learnableMoves:
+  - moveBase: {fileID: 11400000, guid: d2f43790ab66743499d17509beee1ea5, type: 2}
+    level: 1
+  - moveBase: {fileID: 11400000, guid: 43d971bb0d8311e4a9308ea2bf164f89, type: 2}
+    level: 1
+  - moveBase: {fileID: 11400000, guid: 1685e03129cff884988e2d389b47444d, type: 2}
+    level: 1
+  - moveBase: {fileID: 11400000, guid: 9700d4ab6c505b04f8f0717ffbb75f87, type: 2}
+    level: 1

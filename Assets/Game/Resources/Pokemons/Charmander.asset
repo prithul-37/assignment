@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 088fe0d515ccd6541aef317130250d42, type: 3}
+  m_Name: Charmander
+  m_EditorClassIdentifier: 
+  name: Charmander
+  description: "Charmander is a bipedal, reptilian Pok\xE9mon. Most of its body is
+    colored orange, while its underbelly is light yellow and it has blue eyes. It
+    has a flame at the end of its tail, which is said to signify its health."
+  forntSprite: {fileID: 21300000, guid: 2a47f749261a9cb4b94a3021f95fea61, type: 3}
+  backSprite: {fileID: 21300000, guid: bc6ee1fc8df4b19458a5fdcc83fc3beb, type: 3}
+  type1: 2
+  type2: 0
+  maxHP: 39
+  attack: 52
+  defence: 43
+  spAttack: 60
+  spDefence: 50
+  speed: 65

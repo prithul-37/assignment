@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 088fe0d515ccd6541aef317130250d42, type: 3}
+  m_Name: Pikachu
+  m_EditorClassIdentifier: 
+  name: Pikachu
+  description: "Pikachu is an Electric type Pok\xE9mon "
+  forntSprite: {fileID: 21300000, guid: 8cfb14c18ceaad54d96463457dbfe62e, type: 3}
+  backSprite: {fileID: 21300000, guid: 8f956bb248df4fa42961b7606968a879, type: 3}
+  type1: 4
+  type2: 0
+  maxHP: 35
+  attack: 55
+  defence: 40
+  spAttack: 50
+  spDefence: 50
+  speed: 90
+  learnableMoves:
+  - moveBase: {fileID: 11400000, guid: 43d971bb0d8311e4a9308ea2bf164f89, type: 2}
+    level: 1
+  - moveBase: {fileID: 11400000, guid: ae7dac8e242b2d14e86ca66d76877a34, type: 2}
+    level: 1
+  - moveBase: {fileID: 11400000, guid: ac01ebc1ebe975d4cad471961cc01428, type: 2}
+    level: 1
+  - moveBase: {fileID: 11400000, guid: d2f43790ab66743499d17509beee1ea5, type: 2}
+    level: 1
