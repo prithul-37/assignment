@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 
 public class PlayerMovement : MonoBehaviour
@@ -11,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float movespeed;
     public LayerMask solidObjLayer;
+    public LayerMask interactableLayer;
     public LayerMask LongGrass;
 
     float nextEncounter = 0;
@@ -62,6 +64,23 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Z))
+            Interact();
+
+    }
+
+    void Interact()
+    {
+        var facingDir = new Vector3(anim.GetFloat("X"), anim.GetFloat("Y"));
+        var interactPos = transform.position + facingDir;
+
+        //Debug.DrawLine(interactPos, transform.position,Color.green, 0.5f);
+
+        var collider = Physics2D.OverlapCircle(interactPos, 0.3f, interactableLayer);
+        if (collider != null)
+        {
+            collider.GetComponent<Interactable>()?.Interact();
+        }
     }
 
 
@@ -74,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
                                         y * Time.deltaTime * movespeed);
         targetPos += new Vector2(transform.position.x, transform.position.y);
 
-        if (Physics2D.OverlapCircle(targetPos, .2f, solidObjLayer) != null)
+        if (Physics2D.OverlapCircle(targetPos, .2f, solidObjLayer | interactableLayer) != null)
         {
             return;
         }
