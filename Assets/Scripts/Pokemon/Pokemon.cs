@@ -1,18 +1,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Pokemon
 {
-    public PokemonBase Base { get; set; }
-    public int Level { get; set; }
+    [SerializeField] PokemonBase _base;
+    [SerializeField] int level;
+    public PokemonBase Base {
+        get{
+            return _base;
+        }
+    }
+    public int Level {
+        get
+        {
+            return level;
+        }
+    }
     public int HP { get; set; }
 
     public List<Move> Moves { get; set; }
 
-    public Pokemon(PokemonBase pBase, int pLevel)
+    public void Init()
     {
-        Base = pBase;
-        Level = pLevel;
         HP = MaxHP;
 
         Moves = new List<Move>();
@@ -38,7 +48,7 @@ public class Pokemon
     {
         get { return Mathf.FloorToInt((Base.Attack * Level) / 100f) + 5; }
     }
-    public int Defence
+    public int Defense
     {
         get { return Mathf.FloorToInt((Base.Defence * Level) / 100f) + 5; }
     }
@@ -48,7 +58,7 @@ public class Pokemon
         get { return Mathf.FloorToInt((Base.SpAttack * Level) / 100f) + 5; }
     }
 
-    public int SpDefence
+    public int SpDefense
     {
         get { return Mathf.FloorToInt((Base.SpDefence * Level) / 100f) + 5; }
     }
@@ -78,12 +88,13 @@ public class Pokemon
             Fainted = false
         };
 
-
+        float attack = (move.Base.IsSpecial) ? attacker.SpAttack : attacker.Attack;
+        float defense = (move.Base.IsSpecial) ? SpDefense : Defense;
 
 
         float modifiers = Random.Range(.85f, 1f) * type * critical;
         float a = (2 * attacker.Level + 10) / 250f;
-        float b = a * move.Base.Power * ((float)attacker.Attack / Defence) + 2;
+        float b = a * move.Base.Power * ((float)attack / defense) + 2;
         int dmg = Mathf.FloorToInt(b * modifiers);
 
         HP -= dmg;
