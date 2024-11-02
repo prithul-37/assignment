@@ -5,6 +5,8 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] string name;
+    [SerializeField] Sprite sprite;
     [SerializeField]
     //public float movespeed;
     public Light2D PlayerLight;
@@ -20,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 input;
 
     public event Action OnEncountered = delegate { };
+    public event Action<Collider2D> OnEnterTrainersView = delegate { };
 
     private void Start()
     {
@@ -56,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (input != Vector2.zero)
             {
-                StartCoroutine(character.Move(input, CheckForEncounter));
+                StartCoroutine(character.Move(input, OnMoveOver));
                 
             }            
         }
@@ -104,6 +107,12 @@ public class PlayerMovement : MonoBehaviour
     //    return true;
     //}
 
+    void OnMoveOver()
+    {
+        CheckForEncounter();
+        CheckIfInTrainerView();
+    }
+
     void CheckForEncounter()
     {
         if (Physics2D.OverlapCircle(transform.position, 0.05f, GameLayers.i.GrassLayer) != null)
@@ -116,4 +125,25 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    void CheckIfInTrainerView()
+    {
+        var collider = Physics2D.OverlapCircle(transform.position, 0.2f, GameLayers.i.FovLayer);
+        if (collider != null)
+        {
+            //Debug.Log("In Trainers View");
+            character.Animator.IsMoving = false;
+            OnEnterTrainersView?.Invoke(collider);
+        }
+    }
+
+    public string Name
+    {
+        get => name;
+    }
+    public Sprite Sprite
+    {
+        get => sprite;
+    }
+
 }

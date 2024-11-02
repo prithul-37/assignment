@@ -42,10 +42,16 @@ public class BattleUnit : MonoBehaviour
         else
             pokemonSprite.sprite = Pokemon.Base.ForntSprite;
 
+        hud.gameObject.SetActive(true);
         hud.SetData(pokemon);
         
         pokemonSprite.color = originalColor;
         PlayEnterAnimation();
+    }
+
+    public void Clear()
+    {
+        hud.gameObject.SetActive(false);
     }
 
     public void PlayEnterAnimation()

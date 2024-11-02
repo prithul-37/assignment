@@ -83,8 +83,9 @@ public class Character : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Error in Look Towards: You can't ask the character to look diagonally");
-
+            //Debug.LogError("Error in Look Towards: You can't ask the character to look diagonally");
+            anim.MoveX = Mathf.Clamp(xdiff, -1f, 1f);
+            anim.MoveY = 0;
         }
     }
 
