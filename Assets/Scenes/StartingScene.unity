@@ -1648,11 +1648,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c57396ce1054e74db2e6634fa46f032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lettersPerSecond: 0
+  lettersPerSecond: 30
   dialogText: {fileID: 0}
-  actionSelector: {fileID: 0}
-  moveSelector: {fileID: 0}
-  moveDetails: {fileID: 0}
+  actionSelector: {fileID: 532284647}
+  moveSelector: {fileID: 630896976}
+  moveDetails: {fileID: 235371983}
   actionTexts: []
   moveTexts: []
   ppText: {fileID: 0}
@@ -6065,6 +6065,9 @@ MonoBehaviour:
   dialog:
     lines:
     - My pokemons are best , lets start battle!!!!
+  dialogAfterBattle:
+    lines:
+    - I will beat you soon
   exclamation: {fileID: 2123241896}
   fov: {fileID: 985258006}
   character: {fileID: 924016483}

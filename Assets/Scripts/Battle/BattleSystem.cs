@@ -106,7 +106,7 @@ public class BattleSystem : MonoBehaviour
         partyScreen.Init();
         //dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
         yield return dialogBox.TypeDialog($"A wild {enemyUnit.Pokemon.Base.Name} appeared.");
-
+        partyScreen.Init();
         ActionSelection();
     }
 
@@ -215,6 +215,7 @@ public class BattleSystem : MonoBehaviour
                 else
                 {
                     BattleOver(true);
+                    isTrainerBattle= false;
                 }
             }
         }
