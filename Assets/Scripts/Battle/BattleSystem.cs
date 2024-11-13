@@ -1,11 +1,14 @@
+using DG.Tweening;
 using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
 public enum BattleState
 {
-    Start, ActionSelection, MoveSelection, RunningTurn, PerformMove, Busy, PartyScreen,BattleOver
+    Start, ActionSelection, MoveSelection, RunningTurn, PerformMove, Busy, PartyScreen, BattleOver,
+    AboutToUse
 }
 
 public class BattleSystem : MonoBehaviour
@@ -18,11 +21,21 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] PartyScreen partyScreen;
     [SerializeField] Image playerImage;
     [SerializeField] Image trainerImage;
+    [SerializeField] GameObject pokeballSprite;
+
 
     BattleState state;
+    BattleState? prevState;
     int currentAction;
     int currentMove;
     int currentMember;
+    bool aboutToUseChoice = true;
+
+    // These 3 are used for running. Even after speed drops the formula uses the original speed.
+    int originalPlayerSpeed;
+    int originalEnemySpeed;
+    int runAttempts;
+    MoveBase moveToLearn;
 
     public event Action<bool> OnBattleOver = delegate { };
 
@@ -39,6 +52,8 @@ public class BattleSystem : MonoBehaviour
     {
         this.playerParty = playerParty;
         this.wildPokemon = wildPokemon;
+        player = playerParty.GetComponent<PlayerMovement>();
+
         StartCoroutine(SetupBattle());
     }
 
@@ -58,7 +73,7 @@ public class BattleSystem : MonoBehaviour
     {
         playerUnit.Clear();
         enemyUnit.Clear();
-        if (!isTrainerBattle) 
+        if (!isTrainerBattle)
         {
             playerUnit.Setup(playerParty.GetHealthyPokemon());
             //playerHud.SetData(playerUnit.Pokemon);
@@ -131,6 +146,29 @@ public class BattleSystem : MonoBehaviour
     }
 
 
+    void MoveSelection()
+
+    {
+        state = BattleState.MoveSelection;
+        dialogBox.EnableActionSelector(false);
+        dialogBox.EnableDialogText(false);
+        dialogBox.EnableMoveSelector(true);
+    }
+
+
+    IEnumerator AboutToUse(Pokemon newPokemon)
+    {
+        state = BattleState.Busy;
+        yield return dialogBox.TypeDialog($"{trainer.Name} is about to use {newPokemon.Base.Name}." +
+            $"Do you want to change pokemon?");
+
+        state = BattleState.AboutToUse;
+        dialogBox.EnableChoiceBox(true);
+    }
+
+
+
+
     public void HandleUpdate()
     {
         if (state == BattleState.ActionSelection)
@@ -146,7 +184,12 @@ public class BattleSystem : MonoBehaviour
         {
             HandlePartySelection();
         }
-
+        else if (state == BattleState.AboutToUse)
+        {
+            HandleAboutToUse();
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+            StartCoroutine(ThrowPokeball());
     }
 
     IEnumerator PlayerMove()
@@ -156,9 +199,9 @@ public class BattleSystem : MonoBehaviour
         var move = playerUnit.Pokemon.Moves[currentMove];
         yield return RunMove(playerUnit, enemyUnit, move);
 
-        if (state == BattleState.PerformMove) 
-        { 
-            StartCoroutine(EnemyMove()); 
+        if (state == BattleState.PerformMove)
+        {
+            StartCoroutine(EnemyMove());
         }
     }
 
@@ -199,7 +242,8 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
-            if (!isTrainerBattle) {
+            if (!isTrainerBattle)
+            {
                 BattleOver(true);
 
             }
@@ -209,13 +253,13 @@ public class BattleSystem : MonoBehaviour
                 if (nextPokemon != null)
                 {
                     // Send Out next pokemon
-                    StartCoroutine(SendNextTrainerPokemon(nextPokemon));
+                    StartCoroutine(AboutToUse(nextPokemon));
 
                 }
                 else
                 {
                     BattleOver(true);
-                    isTrainerBattle= false;
+                    isTrainerBattle = false;
                 }
             }
         }
@@ -239,9 +283,9 @@ public class BattleSystem : MonoBehaviour
         var move = enemyUnit.Pokemon.GetRandomMove();
         yield return RunMove(enemyUnit, playerUnit, move);
 
-        if (state == BattleState.PerformMove) 
-        { 
-            ActionSelection(); 
+        if (state == BattleState.PerformMove)
+        {
+            ActionSelection();
         }
     }
 
@@ -257,7 +301,7 @@ public class BattleSystem : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.UpArrow))
             currentAction -= 2;
 
-        currentAction = Mathf.Clamp(currentAction,0, 3);
+        currentAction = Mathf.Clamp(currentAction, 0, 3);
 
         dialogBox.UpdateActionSelection(currentAction);
 
@@ -285,14 +329,7 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    void MoveSelection()
 
-    {
-        state = BattleState.MoveSelection;
-        dialogBox.EnableActionSelector(false);
-        dialogBox.EnableDialogText(false);
-        dialogBox.EnableMoveSelector(true);
-    }
 
 
 
@@ -308,7 +345,7 @@ public class BattleSystem : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.UpArrow))
             currentMove -= 2;
 
-        currentMove = Mathf.Clamp(currentMove, 0, playerUnit.Pokemon.Moves.Count-1);
+        currentMove = Mathf.Clamp(currentMove, 0, playerUnit.Pokemon.Moves.Count - 1);
 
         dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
 
@@ -318,7 +355,8 @@ public class BattleSystem : MonoBehaviour
             dialogBox.EnableDialogText(true);
             StartCoroutine(PlayerMove());
         }
-        else if (Input.GetKeyDown(KeyCode.X)) {
+        else if (Input.GetKeyDown(KeyCode.X))
+        {
             dialogBox.EnableMoveSelector(false);
             dialogBox.EnableDialogText(true);
             ActionSelection();
@@ -347,25 +385,78 @@ public class BattleSystem : MonoBehaviour
                 partyScreen.SetMessageText("You can't send out a fainted pokemon");
                 return;
             }
-            if (selectedMember == playerUnit.Pokemon) 
+            if (selectedMember == playerUnit.Pokemon)
             {
                 partyScreen.SetMessageText("You can't switch with the same pokemon");
                 return;
             }
             partyScreen.gameObject.SetActive(false);
+
             state = BattleState.Busy;
             StartCoroutine(SwitchPokemon(selectedMember));
+            state = BattleState.AboutToUse;
         }
         else if (Input.GetKeyDown(KeyCode.X))
         {
+            if (playerUnit.Pokemon.HP <= 0)
+            {
+                partyScreen.SetMessageText("You have to choose a pokemon to continue");
+                return;
+            }
+
+
             partyScreen.gameObject.SetActive(false);
-            ActionSelection();
+            if (prevState == BattleState.AboutToUse)
+                state = BattleState.AboutToUse;
+
+            else
+                ActionSelection();
         }
     }
+
+    void HandleAboutToUse()
+    {
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
+            aboutToUseChoice = !aboutToUseChoice;
+
+        dialogBox.UpdateChoiceBox(aboutToUseChoice);
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            dialogBox.EnableChoiceBox(false);
+            if (aboutToUseChoice == true)
+            {
+                //yes option
+                prevState = BattleState.AboutToUse;
+                OpenPartyScreen();
+            }
+            else
+            {
+                //no option
+                StartCoroutine(SendNextTrainerPokemon());
+
+            }
+
+        }
+        else if (Input.GetKeyDown(KeyCode.X))
+        {
+            dialogBox.EnableChoiceBox(false);
+            StartCoroutine(SendNextTrainerPokemon());
+
+        }
+
+
+
+
+
+    }
+
+
+
     IEnumerator SwitchPokemon(Pokemon newPokemon)
     {
-        if (playerUnit.Pokemon.HP > 0) 
-        { 
+        if (playerUnit.Pokemon.HP > 0)
+        {
             yield return dialogBox.TypeDialog($"Come back {playerUnit.Pokemon.Base.Name}");
             playerUnit.PlayFaintAnimation();
             yield return new WaitForSeconds(2f);
@@ -376,19 +467,62 @@ public class BattleSystem : MonoBehaviour
         dialogBox.SetMoveNames(newPokemon.Moves);
         yield return dialogBox.TypeDialog($"Go {newPokemon.Base.Name}!");
 
-        StartCoroutine(EnemyMove());
-        //state = BattleState.RunningTurn;
+        if (prevState == BattleState.AboutToUse)
+        {
+            prevState = null;
+            StartCoroutine(SendNextTrainerPokemon());
+        }
+        else
+        {
+            ActionSelection();  // Allow the player to select actions after switching
+        }
     }
 
-    IEnumerator SendNextTrainerPokemon(Pokemon nextPokemon) 
+
+    IEnumerator SendNextTrainerPokemon()
     {
         state = BattleState.Busy;
 
+        var nextPokemon = trainerParty.GetHealthyPokemon();
         enemyUnit.Setup(nextPokemon);
         yield return dialogBox.TypeDialog($"{trainer.Name} send out {nextPokemon.Base.Name}!");
 
         StartCoroutine(EnemyMove());
 
     }
+
+    //Use T for throwing pokeball
+    IEnumerator ThrowPokeball()
+    {
+        state = BattleState.Busy;
+
+        yield return dialogBox.TypeDialog($"{player.Name} used POKEBALL!");
+
+        // position of thwe ball
+        var pokeballobj = Instantiate(pokeballSprite, playerUnit.transform.position - new Vector3(2, 0), Quaternion.identity);
+        var pokeball = pokeballobj.GetComponent<SpriteRenderer>();
+
+        // Animations oh trowiing ball
+        yield return pokeball.transform.DOJump(enemyUnit.transform.position + new Vector3(0, 2), 2f, 1, 1f).WaitForCompletion();
+        //Capture animation
+        yield return enemyUnit.PlayCaptureAnimation();
+        yield return pokeball.transform.DOMoveY(enemyUnit.transform.position.y - 1.3f, 0.5f).WaitForCompletion();
+        for (int i = 0; i < 3; ++i)
+        {
+            yield return new WaitForSeconds(0.5f);
+            yield return pokeball.transform.DOPunchRotation(new Vector3(0, 0, 10f), 0.8f).WaitForCompletion();
+        }
+
+        //int TryToCatchPokemon(Pokemon pokemon)
+        //{
+        //    float a = (3 * pokemon.MaxHP - 2 * pokemon.HP) * pokemon.Base.CatchRate * ConditionsDB.GetStatusBonus(pokemon.Status) / (3 * pokemon.MaxHP);
+
+
+        //}
+
+
+    }
+
+
 
 }

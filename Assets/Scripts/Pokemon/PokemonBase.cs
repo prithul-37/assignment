@@ -29,6 +29,8 @@ public class PokemonBase : ScriptableObject
     [SerializeField] int spDefence;
     [SerializeField] int speed;
 
+    [SerializeField] int catchRate = 255;
+
     [SerializeField] List<LearnableMoves> learnableMoves;
 
     public string Name
@@ -48,6 +50,8 @@ public class PokemonBase : ScriptableObject
     public Sprite ForntSprite { get { return forntSprite; } }
     public Sprite BackSprite { get { return backSprite; } }
     public List<LearnableMoves> LearnableMoves { get { return learnableMoves; } }
+
+    public int CatchRate => catchRate;
 
 
 }
@@ -90,15 +94,25 @@ public class TypeChart
 
     static float[][] chart = new float[][]
     {
-    // NOR  FIR  WAT  ELE  GRA  ICE  FIG  POI
-    new float[] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f },  // NOR
-    new float[] { 1f, 0.5f, 0.5f, 1f, 2f, 2f, 1f, 1f },  // FIR
-    new float[] { 1f, 2f, 0.5f, 1f, 0.5f, 1f, 1f, 1f },  // WAT
-    new float[] { 1f, 1f, 2f, 0.5f, 0.5f, 1f, 1f, 1f },  // ELE
-    new float[] { 1f, 0.5f, 2f, 1f, 0.5f, 1f, 1f, 0.5f },  // GRA
-    new float[] { 1f, 0.5f, 0.5f, 1f, 2f, 1f, 1f, 1f },  // ICE
-    new float[] { 2f, 1f, 1f, 1f, 1f, 2f, 1f, 0.5f },  // FIG
-    new float[] { 1f, 1f, 1f, 1f, 2f, 1f, 1f, 0.5f },  // POI
+        // NOR  FIR  WAT  ELE  GRA  ICE  FIG  POI  GRO  FLY  PSY  BUG  ROC  GHO  DRA  DAR  STE  FAI
+        new float[] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0.5f, 0f, 1f, 1f, 0.5f, 1f },  // NOR
+        new float[] { 1f, 0.5f, 0.5f, 1f, 2f, 2f, 1f, 1f, 1f, 1f, 1f, 2f, 0.5f, 1f, 0.5f, 1f, 2f, 1f },  // FIR
+        new float[] { 1f, 2f, 0.5f, 1f, 0.5f, 1f, 1f, 1f, 2f, 1f, 1f, 1f, 2f, 1f, 0.5f, 1f, 1f, 1f },  // WAT
+        new float[] { 1f, 1f, 2f, 0.5f, 0.5f, 1f, 1f, 1f, 0f, 2f, 1f, 1f, 1f, 1f, 0.5f, 1f, 1f, 1f },  // ELE
+        new float[] { 1f, 0.5f, 2f, 1f, 0.5f, 1f, 1f, 0.5f, 2f, 0.5f, 1f, 0.5f, 2f, 1f, 0.5f, 1f, 0.5f, 0.5f },  // GRA
+        new float[] { 1f, 0.5f, 0.5f, 1f, 2f, 0.5f, 1f, 1f, 2f, 2f, 1f, 1f, 1f, 1f, 2f, 1f, 2f, 1f },  // ICE
+        new float[] { 2f, 1f, 1f, 1f, 1f, 2f, 1f, 0.5f, 1f, 0.5f, 0.5f, 0.5f, 2f, 0f, 1f, 2f, 2f, 0.5f },  // FIG
+        new float[] { 1f, 1f, 1f, 1f, 2f, 1f, 1f, 0.5f, 0.5f, 1f, 1f, 0.5f, 0.5f, 0.5f, 1f, 1f, 0f, 2f },  // POI
+        new float[] { 1f, 2f, 1f, 2f, 0.5f, 1f, 1f, 2f, 1f, 0f, 1f, 0.5f, 2f, 1f, 1f, 1f, 2f, 1f },  // GRO
+        new float[] { 1f, 1f, 1f, 0.5f, 2f, 2f, 2f, 1f, 1f, 1f, 1f, 2f, 0.5f, 1f, 1f, 1f, 0.5f, 1f },  // FLY
+        new float[] { 1f, 1f, 1f, 1f, 1f, 1f, 2f, 2f, 1f, 1f, 0.5f, 1f, 1f, 1f, 1f, 0f, 0.5f, 1f },  // PSY
+        new float[] { 1f, 0.5f, 1f, 1f, 2f, 1f, 0.5f, 0.5f, 1f, 0.5f, 2f, 1f, 1f, 0.5f, 1f, 1f, 0.5f, 0.5f },  // BUG
+        new float[] { 1f, 2f, 1f, 1f, 1f, 2f, 0.5f, 1f, 2f, 2f, 1f, 2f, 1f, 1f, 1f, 1f, 0.5f, 1f },  // ROC
+        new float[] { 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 2f, 1f, 1f, 2f, 1f, 0.5f, 1f, 1f },  // GHO
+        new float[] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 2f, 1f, 0.5f, 0f },  // DRA
+        new float[] { 1f, 1f, 1f, 1f, 1f, 1f, 0.5f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0.5f, 1f, 2f },  // DAR
+        new float[] { 1f, 0.5f, 1f, 1f, 1f, 0.5f, 2f, 1f, 1f, 1f, 1f, 1f, 2f, 1f, 1f, 1f, 0.5f, 0.5f },  // STE
+        new float[] { 1f, 0.5f, 1f, 1f, 1f, 1f, 1f, 0.5f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 2f, 1f, 1f }  // FAI
     };
 
 
@@ -108,8 +122,13 @@ public class TypeChart
     {
         if (attackType == PokemonType.None || defenseType == PokemonType.None)
             return 1;
+
         int row = (int)attackType - 1;
         int col = (int)defenseType - 1;
+
+        if (row < 0 || row >= chart.Length || col < 0 || col >= chart[0].Length)
+            return 1;
+
         return chart[row][col];
     }
 }

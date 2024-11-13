@@ -88,6 +88,7 @@ public class GameController : MonoBehaviour
             trainer=null;
         }
 
+        //state = GameState.Dialog;
         state = GameState.FreeRoam;
         battleSystem.gameObject.SetActive(false);
         WorldCamera.gameObject.SetActive(true);

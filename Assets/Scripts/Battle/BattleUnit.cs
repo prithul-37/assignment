@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections;
 
 public class BattleUnit : MonoBehaviour
 {
@@ -88,4 +89,15 @@ public class BattleUnit : MonoBehaviour
         sequence.Append(pokemonSprite.transform.DOLocalMoveY(originalPos.y - 150f,0.5f));
         sequence.Join(pokemonSprite.DOFade(0f,.5f));
     }
+
+    public  IEnumerator PlayCaptureAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(pokemonSprite.DOFade(0, 0.5f));
+        sequence.Join(transform.DOLocalMoveY(originalPos.y + 50f, 0.5f));
+        sequence.Join(transform.DOScale(new Vector3(0.3f, 0.3f, 1f), 0.5f));
+        yield return sequence.WaitForCompletion();
+    }
+
+
 }

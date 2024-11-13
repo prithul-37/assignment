@@ -11,6 +11,7 @@ public class BattleDialogueBox : MonoBehaviour
     [SerializeField] GameObject actionSelector;
     [SerializeField] GameObject moveSelector;
     [SerializeField] GameObject moveDetails;
+    [SerializeField] GameObject choiceBox;
 
     [SerializeField] List<TextMeshProUGUI> actionTexts;
     [SerializeField] List<TextMeshProUGUI> moveTexts;
@@ -18,6 +19,9 @@ public class BattleDialogueBox : MonoBehaviour
     [SerializeField] TextMeshProUGUI ppText;
     [SerializeField] TextMeshProUGUI typeText;
     [SerializeField] Color highlightedColor;
+
+    [SerializeField] TextMeshProUGUI yesText;
+    [SerializeField] TextMeshProUGUI noText;
 
     public void SetDialog(string dialog)
     { dialogText.text = dialog; }
@@ -61,6 +65,12 @@ public class BattleDialogueBox : MonoBehaviour
         moveDetails.SetActive(enabled);
     }
 
+    public void EnableChoiceBox(bool enabled)
+    {
+        choiceBox.SetActive(enabled);
+    }
+
+
     public void UpdateActionSelection(int selectedAction)
     {
         for (int i = 0; i < actionTexts.Count; ++i)
@@ -95,6 +105,20 @@ public class BattleDialogueBox : MonoBehaviour
             { moveTexts[i].text = moves[i].Base.Name; }
             else
                 moveTexts[i].text = "-";
+        }
+    }
+
+    public void UpdateChoiceBox(bool yesSelected)
+    {
+        if (yesSelected)
+        {
+            yesText.color = highlightedColor;
+            noText.color = Color.black;
+
+        }
+        else {
+            yesText.color = Color.black;
+            noText.color = highlightedColor;
         }
     }
 
