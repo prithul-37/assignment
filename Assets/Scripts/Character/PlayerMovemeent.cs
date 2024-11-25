@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -161,6 +162,22 @@ public class PlayerMovement : MonoBehaviour
     public Sprite Sprite
     {
         get => sprite;
+    }
+
+
+    List<GameObject> PlayerInventory = new List<GameObject>();
+
+    public void AddItemInInventory(GameObject Item)
+    {
+        if (PlayerInventory.Count >= 8)
+        {
+            return;
+        }
+        else
+        {
+            PlayerInventory.Add(Item);
+            Item.SetActive(false);
+        }
     }
 
 }

@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -103,3 +103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d5af7389cc53934f9354b207a1206a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 21300000, guid: ae0b6b99b0cf2374c85d9ea8f375e88b, type: 3}
+  ItemName: Medicine
+  Description: Increase Health

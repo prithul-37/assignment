@@ -1,18 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Item : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Sprite Sprite;
+    public string ItemName;
+    public string Description;
 
-    // Update is called once per frame
-    void Update()
+
+    private void Start()
     {
-        
+        Image image = GetComponent<Image>();
+        image.sprite = Sprite;
     }
 }
