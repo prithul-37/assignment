@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -67,6 +66,24 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
             Interact();
+        if (Input.GetKeyDown(KeyCode.I))
+            Inventory();
+    }
+
+    bool i = false;
+    public GameObject Inventoty;
+    void Inventory()
+    {
+        if (i == false)
+        {
+            i = true;
+            Inventoty.SetActive(true);
+        }
+        else
+        {
+            i = false;
+            Inventoty.SetActive(false);
+        }
     }
 
     void Interact()
