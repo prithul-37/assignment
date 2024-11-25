@@ -7514,13 +7514,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pokemons:
   - _base: {fileID: 11400000, guid: 80b858903128d0143a206b01e80043ba, type: 2}
-    level: 5
+    level: 10
   - _base: {fileID: 11400000, guid: f3cbc4185b138cb4bad458f7b08b911b, type: 2}
-    level: 4
+    level: 7
   - _base: {fileID: 11400000, guid: de01bdf7738bcfe438403653869052aa, type: 2}
-    level: 3
-  - _base: {fileID: 11400000, guid: b92dba80ba67dea479eed668f930217e, type: 2}
     level: 4
+  - _base: {fileID: 11400000, guid: b92dba80ba67dea479eed668f930217e, type: 2}
+    level: 3
 --- !u!114 &1050019029
 MonoBehaviour:
   m_ObjectHideFlags: 0

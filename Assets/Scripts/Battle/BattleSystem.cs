@@ -9,8 +9,9 @@ using UnityEngine.UI;
 public enum BattleState
 {
     Start, ActionSelection, MoveSelection, RunningTurn, PerformMove, Busy, PartyScreen, BattleOver,
-    AboutToUse
+    AboutToUse, UseItem
 }
+public enum BattleAction { Move, SwitchPokemon, UseItem, Run }
 
 public class BattleSystem : MonoBehaviour
 {
@@ -48,6 +49,8 @@ public class BattleSystem : MonoBehaviour
 
     PlayerMovement player;
     TrainerController trainer;
+
+    int escapeAttempts;
 
     public void StartBattle(PokemonParty playerParty, Pokemon wildPokemon)
     {
@@ -122,6 +125,7 @@ public class BattleSystem : MonoBehaviour
         partyScreen.Init();
         //dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
         yield return dialogBox.TypeDialog($"A wild {enemyUnit.Pokemon.Base.Name} appeared.");
+        escapeAttempts = 0;
         partyScreen.Init();
         ActionSelection();
     }
@@ -189,8 +193,7 @@ public class BattleSystem : MonoBehaviour
         {
             HandleAboutToUse();
         }
-        if (Input.GetKeyDown(KeyCode.T))
-            StartCoroutine(ThrowPokeball());
+        
     }
 
     IEnumerator PlayerMove()
@@ -317,6 +320,7 @@ public class BattleSystem : MonoBehaviour
             else if (currentAction == 1)
             {
                 //Bag
+                StartCoroutine(RunTurns(BattleAction.UseItem));
             }
             else if (currentAction == 2)
             {
@@ -326,16 +330,109 @@ public class BattleSystem : MonoBehaviour
             else if (currentAction == 3)
             {
                 //run
+                StartCoroutine(RunTurns(BattleAction.Run));
+
             }
         }
     }
 
+    IEnumerator RunTurns(BattleAction battleAction)
+    {
+
+        state = BattleState.RunningTurn;
+        //BattleUnit fastestUnit;
+        //BattleUnit slowestUnit;
+
+        if (battleAction == BattleAction.Move)
+        {
+
+            ////Choose Move Phase
+            //playerUnit.Pokemon.CurrentMove = playerUnit.Pokemon.Moves[currentMove];
+            //enemyUnit.Pokemon.CurrentMove = enemyUnit.Pokemon.GetRandomMove();
+
+            //int playerMovePriority = playerUnit.Pokemon.CurrentMove.Base.Priority;
+            //int enemyMovePriority = enemyUnit.Pokemon.CurrentMove.Base.Priority;
+
+            ////Check who attacks first
+            //bool playerGoesFirst = playerUnit.Pokemon.Speed >= enemyUnit.Pokemon.Speed;
+
+            //if (playerMovePriority > enemyMovePriority)
+            //    playerGoesFirst = true;
+            //else if (playerMovePriority < enemyMovePriority)
+            //    playerGoesFirst = false;
+
+            //fastestUnit = playerGoesFirst ? playerUnit : enemyUnit;
+            //slowestUnit = playerGoesFirst ? enemyUnit : playerUnit;
+
+            //var slowestPokemon = slowestUnit.Pokemon;
+
+            ////Execute Move Phase
+            //yield return RunMove(fastestUnit, slowestUnit, fastestUnit.Pokemon.CurrentMove);
+
+            //if (state == BattleState.BattleOver)
+            //    yield break;
+
+            //// Update the current fastest unit (even if not faster) cause the fastest one can die with a VolatileStatus and we don't want to attack it
+            //if (playerGoesFirst && fastestUnit.Pokemon.HP <= 0)
+            //    fastestUnit = playerUnit;
+            //else if (!playerGoesFirst && fastestUnit.Pokemon.HP <= 0)
+            //    fastestUnit = enemyUnit;
+
+            //if (slowestPokemon.HP > 0)
+            //{
+            //    yield return RunMove(slowestUnit, fastestUnit, slowestUnit.Pokemon.CurrentMove);
+
+            //    if (state == BattleState.BattleOver)
+            //        yield break;
+            //}
+        }
+        else
+        {
+            // Every action here required state to be busy because it's doing something (maybe not)
+            //state = BattleState.Busy;
+
+            //if (battleAction == BattleAction.SwitchPokemon)
+            //{
+            //    dialogBox.EnableActionSelector(false);
+            //    var selectedPokemon = partyScreen.SelectedPokemon;
+            //    yield return SwitchPokemon(selectedPokemon);
+
+            //}
+            //else if (battleAction == BattleAction.Run)
+            //{
+            //    dialogBox.EnableActionSelector(false);
+            //    yield return TryToEscape();
+            //}
+            if (battleAction == BattleAction.UseItem)
+            {
+                dialogBox.EnableActionSelector(false);
+                yield return ThrowPokeball();
+            }
+            if (battleAction == BattleAction.Run)
+            {
+                
+                yield return TryToEscape();
+                dialogBox.EnableActionSelector(true);
+            }
+            //if (state == BattleState.BattleOver)
+            //    yield break;
 
 
+            if (isTrainerBattle && battleAction == BattleAction.Run)
+            {
+                ActionSelection();
+                yield break;
+            }
+            // Enemy turn as this runs every time the player does something that isn't attacking
+            var enemyMove = enemyUnit.Pokemon.GetRandomMove();
+            //yield return RunMove(enemyUnit, playerUnit, enemyMove);
+            yield return RunMove(enemyUnit, playerUnit, enemyMove);
+            state = BattleState.PerformMove;
 
+        }
+    }
 
-
-    void HandleMoveSelection()
+        void HandleMoveSelection()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
             ++currentMove;
@@ -346,7 +443,7 @@ public class BattleSystem : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.UpArrow))
             currentMove -= 2;
 
-        currentMove = Mathf.Clamp(currentMove, 0, playerUnit.Pokemon.Moves.Count - 1);
+        currentMember = Mathf.Clamp(currentMember, 0, playerParty.Pokemons.Count - 1);
 
         dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
 
@@ -550,14 +647,54 @@ public class BattleSystem : MonoBehaviour
 
     }
 
-        int TryToCatchPokemon(Pokemon pokemon)
-        {
+    int TryToCatchPokemon(Pokemon pokemon)
+    {
             //float a = (3 * pokemon.MaxHP - 2 * pokemon.HP) * pokemon.Base.CatchRate * ConditionsDB.GetStatusBonus(pokemon.Status) / (3 * pokemon.MaxHP);
-            float a = pokemon.HP/pokemon.MaxHP;
+         float a = pokemon.HP/pokemon.MaxHP;
 
-            if (a < .15f) return 4;
-            else return UnityEngine.Random.Range(5,10000);
+         if (a < .15f) return 4;
+         else return UnityEngine.Random.Range(5,10000);
+
+    }
+    IEnumerator TryToEscape()
+    {
+        state = BattleState.Busy;
+        if (isTrainerBattle)
+        {
+            yield return dialogBox.TypeDialog($"You can't run from trainer battles!");
+            state = BattleState.PerformMove;
+            yield break;
+        }
+        ++escapeAttempts;
+
+        int playerSpeed = playerUnit.Pokemon.Speed;
+        int enemySpeed = enemyUnit.Pokemon.Speed;
+        if (enemySpeed < playerSpeed)
+        {
+            yield return dialogBox.TypeDialog($"Ran away safely!");
+            BattleOver(true);
+        }
+        else
+        {
+            float f = (playerSpeed * 128) / enemySpeed + 30 * escapeAttempts;
+            f = f % 256;
+
+            if (UnityEngine.Random.Range(0, 256) < f)
+            {
+                yield return dialogBox.TypeDialog($"Ran away safely!");
+                BattleOver(true);
+            }
+            else
+            {
+                yield return dialogBox. TypeDialog($"Can't escape!");
+                state = BattleState.PerformMove;
+            }
 
         }
+
+    }
+
+
+
 
 }

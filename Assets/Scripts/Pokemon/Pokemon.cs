@@ -6,6 +6,15 @@ public class Pokemon
 {
     [SerializeField] PokemonBase _base;
     [SerializeField] int level;
+
+    public Pokemon(PokemonBase pBase, int pLevel)
+    {
+        _base = pBase;
+        level = pLevel;
+        Init();
+    }
+
+
     public PokemonBase Base {
         get{
             return _base;

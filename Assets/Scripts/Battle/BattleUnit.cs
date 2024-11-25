@@ -48,6 +48,7 @@ public class BattleUnit : MonoBehaviour
         hud.gameObject.SetActive(true);
         hud.SetData(pokemon);
 
+        transform.localScale = new Vector3(1,1, 1);
         pokemonSprite.color = originalColor;
         PlayEnterAnimation();
     }
