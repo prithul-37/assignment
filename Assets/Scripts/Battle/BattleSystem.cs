@@ -4,6 +4,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
+//using UnityEngine.UIElements;
 
 public enum BattleState
 {
@@ -438,12 +439,12 @@ public class BattleSystem : MonoBehaviour
             }
 
         }
-        else if (Input.GetKeyDown(KeyCode.X))
-        {
-            dialogBox.EnableChoiceBox(false);
-            StartCoroutine(SendNextTrainerPokemon());
+        //else if (Input.GetKeyDown(KeyCode.X))
+        //{
+        //    dialogBox.EnableChoiceBox(false);
+        //    StartCoroutine(SendNextTrainerPokemon());
 
-        }
+        //}
 
 
 
@@ -496,6 +497,13 @@ public class BattleSystem : MonoBehaviour
     {
         state = BattleState.Busy;
 
+        if (isTrainerBattle)
+        {
+            yield return dialogBox.TypeDialog($"You can't steal trainer pokemon");
+            state = BattleState.RunningTurn;
+            yield break;
+        }
+
         yield return dialogBox.TypeDialog($"{player.Name} used POKEBALL!");
 
         // position of thwe ball
@@ -507,22 +515,49 @@ public class BattleSystem : MonoBehaviour
         //Capture animation
         yield return enemyUnit.PlayCaptureAnimation();
         yield return pokeball.transform.DOMoveY(enemyUnit.transform.position.y - 1.3f, 0.5f).WaitForCompletion();
-        for (int i = 0; i < 3; ++i)
+
+        int shakeCount = TryToCatchPokemon(enemyUnit.Pokemon);
+
+        for (int i = 0; i < Mathf.Min(shakeCount,3); ++i)
         {
             yield return new WaitForSeconds(0.5f);
             yield return pokeball.transform.DOPunchRotation(new Vector3(0, 0, 10f), 0.8f).WaitForCompletion();
         }
 
-        //int TryToCatchPokemon(Pokemon pokemon)
-        //{
-        //    float a = (3 * pokemon.MaxHP - 2 * pokemon.HP) * pokemon.Base.CatchRate * ConditionsDB.GetStatusBonus(pokemon.Status) / (3 * pokemon.MaxHP);
+        if(shakeCount  == 4)
+        {
+            yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.name} was cought");
+            yield return pokeball.DOFade(0, 1.5f).WaitForCompletion();
 
+            playerParty.AddPokemon(enemyUnit.Pokemon);
+            yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.name}has added to your party");
 
-        //}
+            Destroy(pokeball);
+            BattleOver(true);
+        }
+        else
+        {
+            yield return new WaitForSeconds(1f);
+            pokeball.DOFade(0,0.2f);
+            yield return enemyUnit.PlayBreakOutAnimation();
+
+            yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.name} broke free");
+
+            Destroy(pokeball);
+            state = BattleState.RunningTurn;
+        }
 
 
     }
 
+        int TryToCatchPokemon(Pokemon pokemon)
+        {
+            //float a = (3 * pokemon.MaxHP - 2 * pokemon.HP) * pokemon.Base.CatchRate * ConditionsDB.GetStatusBonus(pokemon.Status) / (3 * pokemon.MaxHP);
+            float a = pokemon.HP/pokemon.MaxHP;
 
+            if (a < .15f) return 4;
+            else return UnityEngine.Random.Range(5,10000);
+
+        }
 
 }

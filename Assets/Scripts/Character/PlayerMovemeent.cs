@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        
+
         nextEncounter = Time.time;
 
         if (PlayerLight == null)
@@ -60,8 +60,8 @@ public class PlayerMovement : MonoBehaviour
             if (input != Vector2.zero)
             {
                 StartCoroutine(character.Move(input, OnMoveOver));
-                
-            }            
+
+            }
         }
         character.HandleUpdate();
 

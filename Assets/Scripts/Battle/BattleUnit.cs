@@ -1,8 +1,8 @@
 
-using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleUnit : MonoBehaviour
 {
@@ -14,17 +14,19 @@ public class BattleUnit : MonoBehaviour
     Vector3 originalPos;
     Color originalColor;
 
-    public bool IsPlayerUnit {  
-        get 
-        { 
-            return isPlayerUnit; 
-        } 
+    public bool IsPlayerUnit
+    {
+        get
+        {
+            return isPlayerUnit;
+        }
     }
 
     public Battlehud Hud
     {
-        get { 
-            return hud; 
+        get
+        {
+            return hud;
         }
     }
 
@@ -45,7 +47,7 @@ public class BattleUnit : MonoBehaviour
 
         hud.gameObject.SetActive(true);
         hud.SetData(pokemon);
-        
+
         pokemonSprite.color = originalColor;
         PlayEnterAnimation();
     }
@@ -61,8 +63,8 @@ public class BattleUnit : MonoBehaviour
             pokemonSprite.transform.localPosition = new Vector3(-500, originalPos.y);
         else
             pokemonSprite.transform.localPosition = new Vector3(500, originalPos.y);
-        
-        pokemonSprite.transform.DOLocalMoveX(originalPos.x,1f);
+
+        pokemonSprite.transform.DOLocalMoveX(originalPos.x, 1f);
     }
 
     public void PlayAttactAnimation()
@@ -86,11 +88,11 @@ public class BattleUnit : MonoBehaviour
     public void PlayFaintAnimation()
     {
         var sequence = DOTween.Sequence();
-        sequence.Append(pokemonSprite.transform.DOLocalMoveY(originalPos.y - 150f,0.5f));
-        sequence.Join(pokemonSprite.DOFade(0f,.5f));
+        sequence.Append(pokemonSprite.transform.DOLocalMoveY(originalPos.y - 150f, 0.5f));
+        sequence.Join(pokemonSprite.DOFade(0f, .5f));
     }
 
-    public  IEnumerator PlayCaptureAnimation()
+    public IEnumerator PlayCaptureAnimation()
     {
         var sequence = DOTween.Sequence();
         sequence.Append(pokemonSprite.DOFade(0, 0.5f));
@@ -99,5 +101,14 @@ public class BattleUnit : MonoBehaviour
         yield return sequence.WaitForCompletion();
     }
 
+
+    public IEnumerator PlayBreakOutAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(pokemonSprite.DOFade(1, 0.5f));
+        sequence.Join(transform.DOLocalMoveY(originalPos.y, 0.5f));
+        sequence.Join(transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f));
+        yield return sequence.WaitForCompletion();
+    }
 
 }
