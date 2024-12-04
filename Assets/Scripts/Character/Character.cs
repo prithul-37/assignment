@@ -18,7 +18,7 @@ public class Character : MonoBehaviour
     //}
     public IEnumerator Move(Vector3 moveVec, Action OnMoveOver=null)
     {
-        Debug.Log(anim);
+        //Debug.Log(anim);
         anim.MoveX = Mathf.Clamp(moveVec.x, -1f, 1f); ;
         anim.MoveY = Mathf.Clamp(moveVec.y, -1f, 1f); ;
 

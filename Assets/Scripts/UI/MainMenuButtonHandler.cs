@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,6 +5,7 @@ public class MainMenuButtonHandler : MonoBehaviour
 {
     public void LoadNewGame()
     {
+        PlayerPrefs.DeleteAll();
         SceneManager.LoadScene("StartingScene");
     }
 
@@ -17,6 +16,6 @@ public class MainMenuButtonHandler : MonoBehaviour
 
     public void ContinueGame()
     {
-        SceneManager.LoadScene("ContinueGame");
+        SceneManager.LoadScene("StartingScene");
     }
 }

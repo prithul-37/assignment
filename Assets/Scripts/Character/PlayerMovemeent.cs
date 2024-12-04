@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] string name;
     [SerializeField] Sprite sprite;
-    [SerializeField]
+    [SerializeField] Transform player;
     //public float movespeed;
     public Light2D PlayerLight;
 
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-
+        LoadPlayerPosition();
         nextEncounter = Time.time;
 
         if (PlayerLight == null)
@@ -177,6 +177,37 @@ public class PlayerMovement : MonoBehaviour
         {
             PlayerInventory.Add(Item);
             Item.SetActive(false);
+        }
+    }
+
+    public void SavePlayerPosition()
+    {
+        Vector3 position = player.position;
+        PlayerPrefs.SetFloat("PlayerPosX", position.x);
+        PlayerPrefs.SetFloat("PlayerPosY", position.y);
+        PlayerPrefs.SetFloat("PlayerPosZ", position.z);
+        PlayerPrefs.Save(); 
+        Debug.Log($"Player position saved: {position}");
+    }
+
+    // Load the player's position
+    public void LoadPlayerPosition()
+    {
+        // Check if the position data exists in PlayerPrefs
+        if (PlayerPrefs.HasKey("PlayerPosX") && PlayerPrefs.HasKey("PlayerPosY") && PlayerPrefs.HasKey("PlayerPosZ"))
+        {
+            float x = PlayerPrefs.GetFloat("PlayerPosX");
+            float y = PlayerPrefs.GetFloat("PlayerPosY");
+            float z = PlayerPrefs.GetFloat("PlayerPosZ");
+
+            Vector3 loadedPosition = new Vector3(x, y, z);
+            player.position = loadedPosition;
+
+            Debug.Log($"Player position loaded: {loadedPosition}");
+        }
+        else
+        {   
+            Debug.LogWarning("No saved position found!");
         }
     }
 
