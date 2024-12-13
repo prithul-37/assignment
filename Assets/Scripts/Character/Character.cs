@@ -16,6 +16,9 @@ public class Character : MonoBehaviour
     //{
     //    anim = GetComponent<CharacterAnimator>();
     //}
+
+    [SerializeField] AudioClip NormalWalk;
+
     public IEnumerator Move(Vector3 moveVec, Action OnMoveOver=null)
     {
         //Debug.Log(anim);
@@ -29,6 +32,8 @@ public class Character : MonoBehaviour
         if (!IsPathClear(targetPos)) {
             yield break;    
         }
+        if(NormalWalk != null)
+            AudioManager.Instance.PlayAudio(NormalWalk,.5f);
 
         IsMoving=true;
 

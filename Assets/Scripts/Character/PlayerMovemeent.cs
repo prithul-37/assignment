@@ -130,11 +130,13 @@ public class PlayerMovement : MonoBehaviour
         CheckForEncounter();
         CheckIfInTrainerView();
     }
-
+    [SerializeField] AudioClip walkInLeaf;
     void CheckForEncounter()
     {
         if (Physics2D.OverlapCircle(transform.position, 0.05f, GameLayers.i.GrassLayer) != null)
-        {
+        {   
+            //grass sound
+            AudioManager.Instance.PlayAudio(walkInLeaf,0.5f);
             Debug.Log("In");
             if (UnityEngine.Random.Range(1, 101) <= 20 && Time.time > nextEncounter)
             {
