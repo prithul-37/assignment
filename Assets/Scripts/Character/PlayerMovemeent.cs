@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] string name;
     [SerializeField] Sprite sprite;
-    [SerializeField]
+    [SerializeField] Transform player;
     //public float movespeed;
     public Light2D PlayerLight;
 
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-
+        LoadPlayerPosition();
         nextEncounter = Time.time;
 
         if (PlayerLight == null)
@@ -67,6 +67,24 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
             Interact();
+        if (Input.GetKeyDown(KeyCode.I))
+            Inventory();
+    }
+
+    bool i = false;
+    public GameObject Inventoty;
+    void Inventory()
+    {
+        if (i == false)
+        {
+            i = true;
+            Inventoty.SetActive(true);
+        }
+        else
+        {
+            i = false;
+            Inventoty.SetActive(false);
+        }
     }
 
     void Interact()
@@ -120,6 +138,7 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("In");
             if (UnityEngine.Random.Range(1, 101) <= 20 && Time.time > nextEncounter)
             {
+                AchievementManager.Instance.UnlockAchievement("FirstFight");
                 character.Animator.IsMoving = false;
                 OnEncountered?.Invoke();
             }
@@ -144,6 +163,53 @@ public class PlayerMovement : MonoBehaviour
     public Sprite Sprite
     {
         get => sprite;
+    }
+
+
+    List<GameObject> PlayerInventory = new List<GameObject>();
+
+    public void AddItemInInventory(GameObject Item)
+    {
+        if (PlayerInventory.Count >= 8)
+        {
+            return;
+        }
+        else
+        {
+            PlayerInventory.Add(Item);
+            Item.SetActive(false);
+        }
+    }
+
+    public void SavePlayerPosition()
+    {
+        Vector3 position = player.position;
+        PlayerPrefs.SetFloat("PlayerPosX", position.x);
+        PlayerPrefs.SetFloat("PlayerPosY", position.y);
+        PlayerPrefs.SetFloat("PlayerPosZ", position.z);
+        PlayerPrefs.Save(); 
+        Debug.Log($"Player position saved: {position}");
+    }
+
+    // Load the player's position
+    public void LoadPlayerPosition()
+    {
+        // Check if the position data exists in PlayerPrefs
+        if (PlayerPrefs.HasKey("PlayerPosX") && PlayerPrefs.HasKey("PlayerPosY") && PlayerPrefs.HasKey("PlayerPosZ"))
+        {
+            float x = PlayerPrefs.GetFloat("PlayerPosX");
+            float y = PlayerPrefs.GetFloat("PlayerPosY");
+            float z = PlayerPrefs.GetFloat("PlayerPosZ");
+
+            Vector3 loadedPosition = new Vector3(x, y, z);
+            player.position = loadedPosition;
+
+            Debug.Log($"Player position loaded: {loadedPosition}");
+        }
+        else
+        {   
+            Debug.LogWarning("No saved position found!");
+        }
     }
 
 }

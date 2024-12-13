@@ -1,27 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 public class WeatherSystem : MonoBehaviour
-{   
+{
+    public Light2D EnvironmentLight; 
+    public static bool isDay;        
 
-    public Light2D EnvironmentLight;
-    public static bool isDay;
-    // Start is called before the first frame update
+    [Header("Day/Night Cycle Settings")]
+    public float dayDuration = 60f;        
+    public float minLightIntensity = 0.1f; 
+    public float maxLightIntensity = 1.0f; 
+    public int startDay = 1;               
+
+    [Header("Tracked Time")]
+    public int currentDay;                
+    private float currentTime ;             
+
     void Start()
     {
         
+        currentDay = startDay;
+        currentTime = 20f;
     }
 
-    // Update is called once per frame
     void Update()
-    {   
+    {
+        currentTime += Time.deltaTime;
+        if (currentTime > dayDuration)
+        {
+            currentTime = 0f;
+            currentDay++;
+            Debug.Log($"A new day has begun! Day: {currentDay}");
+        }
 
-        EnvironmentLight.intensity = Mathf.Abs(Mathf.Cos(Time.time/30));
-
-        if(EnvironmentLight.intensity > .3f) isDay = true;
-        else isDay = false;
+        float normalizedTime = currentTime / dayDuration;
+        float lightIntensity = Mathf.Lerp(minLightIntensity, maxLightIntensity, Mathf.Sin(normalizedTime * Mathf.PI));
+        EnvironmentLight.intensity = lightIntensity;
+        isDay = lightIntensity > (minLightIntensity + maxLightIntensity) / 2f;
     }
 }
